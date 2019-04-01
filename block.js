@@ -1,3 +1,6 @@
+// To get the SHA256 Algorithm
+const SHA256 = require('crypto-js/sha256');
+
 class Block {
     // Attributes the Block Needs
     constructor(timestamp, lastHash, hash, data) {
@@ -13,8 +16,8 @@ class Block {
         // Since hashes are long (about 32 characters, we only print the first 10 characters using the substring function)
         return `Block - 
             Time Stamp: ${this.timestamp}
-            Last Hash : ${this.lastHash}
-            Hash      : ${this.hash}
+            Last Hash : ${this.lastHash.substring(0,10)}
+            Hash      : ${this.hash.substring(0,10)}
             Data      : ${this.data}`;
     }
 
@@ -32,9 +35,16 @@ class Block {
         const timestamp = Date.now();
         // Set the hash of previous block
         const lastHash = lastBlock.hash;
-        const hash = 'todo - hash';
+        const hash = Block.hash(timestamp,lastHash,data);
         // We already have our data so we can return a new block now
         return new this(timestamp,lastHash,hash,data);
+    }
+
+    // Will represent the unique data that we want to generate the hash for
+    static hash(timestamp, lastHash, data) {
+        // Using the Template String to combine the data
+        // Using toString because the function returns an object
+        return SHA256(`${timestamp}${lastHash}${data}`).toString();
     }
 }
 
