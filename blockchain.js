@@ -41,6 +41,21 @@ class Blockchain {
         // If all tests passed, then return true
         return true;
     }
+
+    replaceChain(newChain) {
+        // Also check if the new chain is longer or not than our current chain
+        // Make sure if it's a valid chain
+        if(newChain.length <= this.chain.length) {
+            console.log("Received Chain is Not Longer than the Current Chain");
+            return;
+        } else if (!this.isValidChain(newChain)) {
+            console.log("Received Chain is Not Valid");
+        }
+        
+        // If all tests pass then we can replace the chain so
+        console.log("Replacing the Block Chain with a New Chain");
+        this.chain = newChain;
+    }
 }
 
 module.exports = Blockchain;
