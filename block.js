@@ -46,6 +46,12 @@ class Block {
         // Using toString because the function returns an object
         return SHA256(`${timestamp}${lastHash}${data}`).toString();
     }
+
+    // To Generate Hash of a Block
+    static blockHash(block) {
+        const { timestamp, lastHash, data } = block;
+        return Block.hash(timestamp,lastHash,data);
+    }
 }
 
 // To share the Block class to other modules
