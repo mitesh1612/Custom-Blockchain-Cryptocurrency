@@ -52,7 +52,13 @@ class P2pServer {
         this.sockets.push(socket);
         console.log("Socket Connected");
 
+        // Thus our sockets are ready to receive messages
         this.messageHandler(socket);
+
+        // We have to send messages containing the blockchain object to the sockets we connect to
+        // We want to send a message to each socket that our web socket server receives as a peer connection
+        // Our socket sends the stringified version of the chain we have
+        socket.send(JSON.stringify(this.blockchain.chain));
     }
     
     messageHandler(socket) {
