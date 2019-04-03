@@ -1,5 +1,4 @@
 const Block = require("./block");
-const { DIFFICULTY } = require("../config");
 
 // Describe serves as a description for the test. Second parameter is an arrow function that contains a series of tests that jest will execute once it finds a describe block function
 let data, lastBlock, block;
@@ -27,8 +26,17 @@ describe("Block",() => {
     });
 
     it('Generates a Hash that matches the Difficulty',() => {
-        expect(block.hash.substring(0,DIFFICULTY)).toEqual('0'.repeat(DIFFICULTY));
-        console.log(block.toString());
+        expect(block.hash.substring(0,block.difficulty)).toEqual('0'.repeat(block.difficulty));
+    });
+
+    it('Lowers the difficulty for Slowly Mined Blocks',() => {
+        // Give the Timestamp of the New Block to be absurdly high to see that difficulty is reduced
+        expect(Block.adjustDifficulty(block,block.timestamp+360000)).toEqual(block.difficulty - 1);
+    });
+
+    it('Raises the difficulty for Quickly Mined Blocks',() => {
+        // Give the Timestamp of the New Block to be absurdly high to see that difficulty is reduced
+        expect(Block.adjustDifficulty(block,block.timestamp+1)).toEqual(block.difficulty + 1);
     });
 });
 
