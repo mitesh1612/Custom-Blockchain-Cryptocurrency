@@ -1,8 +1,7 @@
 // To get the SHA256 Algorithm
 const SHA256 = require('crypto-js/sha256');
 
-// Constant to set the difficulty of the system
-const DIFFICULTY = 4;
+const { DIFFICULTY } = require("../config");
 
 class Block {
     // Attributes the Block Needs

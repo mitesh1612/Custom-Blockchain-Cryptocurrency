@@ -1,4 +1,5 @@
 const Block = require("./block");
+const { DIFFICULTY } = require("../config");
 
 // Describe serves as a description for the test. Second parameter is an arrow function that contains a series of tests that jest will execute once it finds a describe block function
 let data, lastBlock, block;
@@ -23,6 +24,11 @@ describe("Block",() => {
     it('Sets the `lastHash` to the Hast of the Last Block',() => {
         expect(block.lastHash).toEqual(lastBlock.hash);
         // This expects the blocks last hash to be equal to the previous block's hash
+    });
+
+    it('Generates a Hash that matches the Difficulty',() => {
+        expect(block.hash.substring(0,DIFFICULTY)).toEqual('0'.repeat(DIFFICULTY));
+        console.log(block.toString());
     });
 });
 
