@@ -51,7 +51,21 @@ class P2pServer {
     connectSocket(socket) {
         this.sockets.push(socket);
         console.log("Socket Connected");
-    } 
+
+        this.messageHandler(socket);
+    }
+    
+    messageHandler(socket) {
+        // Occurs whenever a message is received that was sent via the sent function. Callback contains the message object
+        // We assume that are messages are stringified objects
+        socket.on('message',message => {
+            // Convert the stringified message to JSON
+            const data = JSON.parse(message);
+            console.log('Data',data);
+        });
+        // We need to attach the handler to the sockets
+        // Since all sockets run through the connectSocket function, we attach the message handler there
+    }
 }
 
 module.exports = P2pServer;
