@@ -28,12 +28,30 @@ class P2pServer {
         // First argument is the event that we'll listen for (string). By listening for connection events, we can fire up some code whenever a socket connects to this server 
         // We also give a callback function to interact with that socket whose parameter is that one socket object that is created as a result of this connection (Using a helper function here)
         server.on('connection', socket => this.connectSocket(socket));
-        
+
+        // To handle later instances of applications to connect to peers that are specified when they are started
+        this.connectToPeers();
+
         console.log(`Listening for peer-to-peer connections on: ${P2P_PORT}`);
+
+    }
+
+    connectToPeers() {
+        // Run some code for each peers in the array
+        peers.forEach(peer => {
+            // peer is an address of type 'ws://localhost:5001' (Basically peer is an address of the peer)
+            // Creates a socket object like the one above
+            const socket = new Websocket(peer);
+            // Open another event listener for the open event for this because when we specify peers for the application, we might not have started the server at localhost:5001
+            // By using this on('open') event listener, we can run some code if that server is started later even though it is specified as a peer first
+            socket.on('open',() => this.connectSocket(socket));
+        });
     }
 
     connectSocket(socket) {
         this.sockets.push(socket);
         console.log("Socket Connected");
-    }
+    } 
 }
+
+module.exports = P2pServer;

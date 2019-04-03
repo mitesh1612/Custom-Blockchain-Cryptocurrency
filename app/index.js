@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Blockchain = require('../blockchain');
 // Automatically imports the index.js file of a directory so we import the directory
+const P2pServer = require('./p2p-server');
 
 // Need to run mutiple instances of the same app
 const HTTP_PORT = process.env.HTTP_PORT || 3001; 
@@ -11,6 +12,8 @@ const app = express();
 // To use Body Parser JSON
 app.use(bodyParser.json()); // Allows us to receive JSON in POST Requests now
 const bc = new Blockchain();
+// Create a new instance of the P2p Server using our blockchain
+const p2pServer = new P2pServer(bc);
 
 // Returns the blocks of current blockchain
 app.get('/blocks',(req, res) => {
@@ -35,7 +38,9 @@ app.post('/mine',(req, res) => {
 
 // To make the app listen
 app.listen(HTTP_PORT,() => {
-    console.log(`Listening on Port : ${HTTP_PORT}`);
+    console.log(`Listening on Port: ${HTTP_PORT}`);
 });
+// Start the web socket server
+ p2pServer.listen();
 
 // Scripts added to package.json in start and dev
