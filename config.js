@@ -1,4 +1,4 @@
-// Constant to set the difficulty of the system
 const DIFFICULTY = 3;
+const MINE_RATE = 3000; // Mine Rate Value is in Milisecons
 
-module.exports = { DIFFICULTY };
+module.exports = { DIFFICULTY, MINE_RATE };
