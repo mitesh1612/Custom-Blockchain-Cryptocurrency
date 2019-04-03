@@ -58,7 +58,7 @@ class P2pServer {
         // We have to send messages containing the blockchain object to the sockets we connect to
         // We want to send a message to each socket that our web socket server receives as a peer connection
         // Our socket sends the stringified version of the chain we have
-        socket.send(JSON.stringify(this.blockchain.chain));
+        this.sendChain(socket);
     }
     
     messageHandler(socket) {
@@ -67,10 +67,21 @@ class P2pServer {
         socket.on('message',message => {
             // Convert the stringified message to JSON
             const data = JSON.parse(message);
-            console.log('Data',data);
+
+            // Now we try to update our blockchain using the chain received
+        this.blockchain.replaceChain(data);
         });
         // We need to attach the handler to the sockets
         // Since all sockets run through the connectSocket function, we attach the message handler there
+
+    }
+    sendChain(socket) {
+        socket.send(JSON.stringify(this.blockchain.chain));
+    }
+
+    syncChains() {
+        // Synchronize the chain to all other sockets
+        this.sockets.forEach(socket => this.sendChain(socket));
     }
 }
 

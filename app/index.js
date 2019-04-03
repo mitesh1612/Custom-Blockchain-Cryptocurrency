@@ -32,6 +32,8 @@ app.post('/mine',(req, res) => {
     const block = bc.addBlock(req.body.data);
     // Inform the sender that a new block was added.
     console.log(`New Block Added: ${block.toString()}`);
+    // After mining the block, sync chains to all the peers
+    p2pServer.syncChains();
     // Response with showing the updated chain. Redirect to the previous blocks endpoint
     res.redirect('/blocks');
 });
