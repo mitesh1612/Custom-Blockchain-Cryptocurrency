@@ -1,3 +1,4 @@
+const ChainUtil = require('../chain-util');
 const { INITIAL_BALANCE } = require("../config");
 
 class Wallet {
@@ -6,8 +7,10 @@ class Wallet {
         // In real cryptocurrencies, wallets dont start with an initial balance for free
         // Assume this initial balance is in config file and thus defined globally
         this.balance = INITIAL_BALANCE;
-        this.keyPair = null;
-        this.publicKey = null;
+        this.keyPair = ChainUtil.genKeyPair();
+        // Use the method of keyPair object to get the public key
+        // We also encode the public key into its hexadecimal string 
+        this.publicKey = this.keyPair.getPublic().encode('hex');
     }
 
     toString() {
@@ -17,6 +20,8 @@ class Wallet {
 
         // Publick Key is an object with its own toString Method
     }
+
+    // Tests in dev-test.js
 }
 
 module.exports = Wallet;
