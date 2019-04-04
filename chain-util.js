@@ -20,3 +20,5 @@ class ChainUtil {
 }
 
 module.exports = ChainUtil;
+
+// In package.json, we added testEnvironment to node for the random number generator required by ec.genKeyPair()
