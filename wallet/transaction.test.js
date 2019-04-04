@@ -45,4 +45,21 @@ describe("Transaction",() => {
         });
 
     });
+
+    describe("Updating a Transaction",() => {
+        let nextAmount, nextRecipient;
+        beforeEach(() => {
+            nextAmount = 20;
+            nextRecipient = "n3xt-4ddr355";
+            transaction = transaction.update(wallet, nextRecipient, nextAmount);
+        });
+
+        it("Subtracts the Next Amount from the Sender's Output",() => {
+            expect(transaction.outputs.find(output => output.address === wallet.publicKey).amount).toEqual(wallet.balance - amount - nextAmount);
+        });
+
+        it("Outputs an Amount for the Next Recipient",() => {
+            expect(transaction.outputs.find(output => output.address === nextRecipient).amount).toEqual(nextAmount);
+        });
+    });
 });
