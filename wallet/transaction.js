@@ -8,6 +8,23 @@ class Transaction {
         this.outputs = [];
     }
 
+    update(senderWallet, recipient, amount) {
+        // Deliver more of the sender's currency, thus update the resulting amount so we find the original output
+        const senderOutput = this.outputs.find(output => output.address === senderWallet.publicKey);
+        // Consider case where they transact with amount less than what they have
+        if (amount > senderOutput.amount) {
+            console.log(`Amount: ${amount} exceeds the Balance`);
+            return;
+        }
+        // If the amount is valid, then we update
+        senderOutput.amount = senderOutput.amount - amount;
+        this.outputs.push({ amount, address: recipient});
+        // Original Signature won't be valid, so update the signature
+        Transaction.signTransaction(this, senderWallet);
+
+        return this;
+    }
+
     static newTransaction(senderWallet, recipient, amount) {
         // senderWallet required to look at their balance and the public key of the wallet to create an output that represents how much currency they should have after the transaction
         // recipient contains the recipients address
@@ -49,6 +66,7 @@ class Transaction {
     static verifyTransaction(transaction) {
         return ChainUtil.verifySignature(transaction.input.address, transaction.input.signature, ChainUtil.hash(transaction.outputs));
     }
+
 }
 
 module.exports = Transaction;
