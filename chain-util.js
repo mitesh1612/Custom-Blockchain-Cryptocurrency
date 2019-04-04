@@ -24,6 +24,11 @@ class ChainUtil {
         // Return SHA256 Hash of stringified data
         return SHA256(JSON.stringify(data)).toString();
     }
+
+    static verifySignature(publicKey, signature, dataHash) {
+        // Use the verify method of ec. For that we need the key object itself. We can get this by using keyFromPublic Function within ec instance. We use 'hex' since our key was in hex
+        return ec.keyFromPublic(publicKey,'hex').verify(dataHash,signature);
+    }
 }
 
 module.exports = ChainUtil;

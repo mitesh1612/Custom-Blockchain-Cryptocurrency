@@ -45,6 +45,10 @@ class Transaction {
         // What do we sign? We want to generate signature for the entire transaction but doesnt make sense to sign the whole transaction object since we are still creating the input object
         // Also we are using hash in the sign method rather than the actual one because its better to have a constant bit value then some unexpectedly long data. So we use the hash function used in blockchain
     }
+
+    static verifyTransaction(transaction) {
+        return ChainUtil.verifySignature(transaction.input.address, transaction.input.signature, ChainUtil.hash(transaction.outputs));
+    }
 }
 
 module.exports = Transaction;
