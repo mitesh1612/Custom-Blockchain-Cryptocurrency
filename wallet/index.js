@@ -22,6 +22,11 @@ class Wallet {
     }
 
     // Tests in dev-test.js
+
+    sign(dataHash) {
+        // Use the dataHash to generate a signature using the private and public keys
+        this.keyPair.sign(dataHash);
+    }
 }
 
 module.exports = Wallet;

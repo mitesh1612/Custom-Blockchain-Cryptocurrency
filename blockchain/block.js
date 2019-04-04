@@ -1,5 +1,5 @@
 // To get the SHA256 Algorithm
-const SHA256 = require('crypto-js/sha256');
+ChainUtil = require('../chain-util');
 
 const { DIFFICULTY, MINE_RATE } = require("../config");
 
@@ -60,7 +60,7 @@ class Block {
     static hash(timestamp, lastHash, data, nonce, difficulty) {
         // Using the Template String to combine the data
         // Using toString because the function returns an object
-        return SHA256(`${timestamp}${lastHash}${data}${nonce}${difficulty}`).toString();
+        return ChainUtil.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
     }
 
     // To Generate Hash of a Block

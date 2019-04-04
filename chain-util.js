@@ -4,6 +4,8 @@ const uuidV1 = require('uuid/v1');
 // EC is the Elliptic Cryptography Module. It's a class. To use the methods of this class, we need to create an instance. It takes one parameter, a string, which defines what curve based cryptography implementation this ec instance should use
 // Bitcoin uses secp256k1
 const ec = new EC('secp256k1');
+// Hash Function
+const SHA256 = require('crypto-js/sha256');
 
 
 // We'll be adding a few methods here that relate to the utility side of the cryptocurrency system like generate keys, unique hashes etc
@@ -16,6 +18,11 @@ class ChainUtil {
     
     static id() {
         return uuidV1();
+    }
+
+    static hash(data) {
+        // Return SHA256 Hash of stringified data
+        return SHA256(JSON.stringify(data)).toString();
     }
 }
 
