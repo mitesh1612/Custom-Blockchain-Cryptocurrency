@@ -27,6 +27,7 @@ class Wallet {
         // Use the dataHash to generate a signature using the private and public keys
         this.keyPair.sign(dataHash);
     }
+    // Not using the above method right now since there is some issue
 }
 
 module.exports = Wallet;
