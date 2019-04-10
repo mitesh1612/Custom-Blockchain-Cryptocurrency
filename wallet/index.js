@@ -50,6 +50,7 @@ class Wallet {
         else {
             // Transaction doesnt exist so create a new one
             transaction = Transaction.newTransaction(this, recipient, amount);
+            // Shouldnt this be outside the else block?
             transactionPool.updateOrAddTransaction(transaction);
         }
 

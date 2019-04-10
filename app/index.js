@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const Blockchain = require('../blockchain');
 // Automatically imports the index.js file of a directory so we import the directory
 const P2pServer = require('./p2p-server');
+const Wallet = require('../wallet');
+// Due to this every user will have a unique instance of TransactionPool but we want to share this (Its local)
+const TransactionPool = require('../wallet/transaction-pool');
+// We'll use the P2P Server to synchronize
 
 // Need to run mutiple instances of the same app
 const HTTP_PORT = process.env.HTTP_PORT || 3001; 
@@ -12,8 +16,12 @@ const app = express();
 // To use Body Parser JSON
 app.use(bodyParser.json()); // Allows us to receive JSON in POST Requests now
 const bc = new Blockchain();
-// Create a new instance of the P2p Server using our blockchain
-const p2pServer = new P2pServer(bc);
+const wallet = new Wallet();
+const tp = new TransactionPool();
+// 1. We want to be able to add new transactions in the pool to conduct exchanges with other users
+// 2. Users must also be able to see all the transactions in the pool
+// Create a new instance of the P2p Server using our blockchain and the transaction pool
+const p2pServer = new P2pServer(bc, tp);
 
 // Returns the blocks of current blockchain
 app.get('/blocks',(req, res) => {
@@ -36,6 +44,19 @@ app.post('/mine',(req, res) => {
     p2pServer.syncChains();
     // Response with showing the updated chain. Redirect to the previous blocks endpoint
     res.redirect('/blocks');
+});
+
+app.get('/transactions',(req, res) => {
+    res.json(tp.transactions);
+});
+
+app.post('/transact',(req, res) => {
+    const { recipient, amount } = req.body;
+    const transaction = wallet.createTransaction(recipient, amount, tp);
+    // Broadcast the transaction we created to the server
+    p2pServer.broadcastTransaction(transaction);
+    // To see the new transaction
+    res.redirect('/transactions');
 });
 
 // To make the app listen

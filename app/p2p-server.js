@@ -1,5 +1,11 @@
 const Websocket = require('ws');
 
+// Type field types for different messages
+const MESSAGE_TYPES = {
+    chain: "CHAIN",
+    transaction: "TRANSACTION"
+}
+
 // Default Port is 5001 or define a port specifically (like done previously)
 const P2P_PORT = process.env.P2P_PORT || 5001;
 
@@ -12,9 +18,10 @@ const P2P_PORT = process.env.P2P_PORT || 5001;
 const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 
 class P2pServer {
-    constructor(blockchain) {
+    constructor(blockchain, transactionPool) {
         // Give each peer an instance of the blockchain
         this.blockchain = blockchain;
+        this.transactionPool = transactionPool;
         this.sockets = [];
     }
     
@@ -67,21 +74,47 @@ class P2pServer {
         socket.on('message',message => {
             // Convert the stringified message to JSON
             const data = JSON.parse(message);
-
-            // Now we try to update our blockchain using the chain received
-        this.blockchain.replaceChain(data);
+            switch(data.type) {
+                case MESSAGE_TYPES.chain:
+                    // Now we try to update our blockchain using the chain received
+                    this.blockchain.replaceChain(data.chain);
+                    break;
+                case MESSAGE_TYPES.transaction: 
+                    // Update or add the incoming transaction to the transaction pool
+                    this.transactionPool.updateOrAddTransaction(data.transaction);
+                    break;
+            }
         });
         // We need to attach the handler to the sockets
         // Since all sockets run through the connectSocket function, we attach the message handler there
 
     }
     sendChain(socket) {
-        socket.send(JSON.stringify(this.blockchain.chain));
+        // Add the type and key
+        socket.send(JSON.stringify({type: MESSAGE_TYPES.chain,
+            chain: this.blockchain.chain
+        }));
+    }
+
+    sendTransaction(socket, transaction) {
+        socket.send(JSON.stringify({type: MESSAGE_TYPES.transaction,
+            transaction
+        }));
+        // Sets the transaction key to the transaction object
+        // Now since the socket's message handler assumes that the received message is a chain, it tries to replace the blockchain
+        // To solve this, we can attach type fields to the data we send over messages
+
     }
 
     syncChains() {
         // Synchronize the chain to all other sockets
         this.sockets.forEach(socket => this.sendChain(socket));
+    }
+
+    // Broadcast a new transaction to all the sockets
+    broadcastTransaction(transaction) {
+        // Send to all sockets
+        this.sockets.forEach(socket => this.sendTransaction(socket, transaction))
     }
 }
 
