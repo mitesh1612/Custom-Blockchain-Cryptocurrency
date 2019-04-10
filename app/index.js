@@ -59,11 +59,15 @@ app.post('/transact',(req, res) => {
     res.redirect('/transactions');
 });
 
+app.get('/public-key',(req, res) => {
+    res.json({ publicKey : wallet.publicKey });
+})
+
 // To make the app listen
 app.listen(HTTP_PORT,() => {
     console.log(`Listening on Port: ${HTTP_PORT}`);
 });
 // Start the web socket server
- p2pServer.listen();
+p2pServer.listen();
 
 // Scripts added to package.json in start and dev
