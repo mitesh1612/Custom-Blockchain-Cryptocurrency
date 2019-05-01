@@ -31,8 +31,10 @@ class Miner {
         // So Clear the Transaction Pool
         this.transactionPool.clear();
         // Broadcast to every miner to clear their transaction pools
+        this.p2pServer.broadcastClearTransactions();
 
-
+        // We want to accress the generated block
+        return block;
     }
 }
 

@@ -3,7 +3,8 @@ const Websocket = require('ws');
 // Type field types for different messages
 const MESSAGE_TYPES = {
     chain: "CHAIN",
-    transaction: "TRANSACTION"
+    transaction: "TRANSACTION",
+    clear_transactions: "CLEAR_TRANSACTIONS"
 }
 
 // Default Port is 5001 or define a port specifically (like done previously)
@@ -83,6 +84,9 @@ class P2pServer {
                     // Update or add the incoming transaction to the transaction pool
                     this.transactionPool.updateOrAddTransaction(data.transaction);
                     break;
+                case MESSAGE_TYPES.clear_transactions:
+                    this.transactionPool.clear();
+                    break;
             }
         });
         // We need to attach the handler to the sockets
@@ -115,6 +119,12 @@ class P2pServer {
     broadcastTransaction(transaction) {
         // Send to all sockets
         this.sockets.forEach(socket => this.sendTransaction(socket, transaction))
+    }
+
+    broadcastClearTransactions() {
+        this.sockets.forEach(socket => socket.send(JSON.stringify({
+            type: MESSAGE_TYPES.clear_transactions
+        })));
     }
 }
 
