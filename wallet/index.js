@@ -57,6 +57,44 @@ class Wallet {
         return transaction;
     }
 
+    calculateBalance(blockchain) {
+        let balance = this.balance;
+        let transactions = []
+        // Blockchain has blocks which has list of transactions 
+        blockchain.forEach(block => block.data.forEach(transaction => {
+            transactions.push(transaction)
+        }));
+        // Array of transactions whose input was created by this wallet
+        const walletInputTs = transactions.filter(transaction => transaction.input.address === this.publicKey);
+        
+        let startTime = 0
+
+        if (walletInputTs.length > 0) {
+            // We cant reduce an empty array so if InputTs, value gets undefined so apply a check
+            // Mainly want the recent transactions that this wallet created
+            // So we collect objects since the highest timestamp
+            // Gives the most recent transaction. 
+            const recentInputT = walletInputTs.reduce((prev, current) => prev.input.timestamp > current.input.timestamp ? prev : current);
+            // Balance should correspond to the output object of this recent transaction
+            balance = recentInputT.outputs.find(output => output.address === this.publicKey).amount;
+            // Add up the received currency 
+            startTime = recentInputT.input.timestamp;
+        }
+        transactions.forEach(transaction => {
+            // Only look for outputs where the transaction time stamp is bigger than the 
+            if(transaction.input.timestamp > startTime) {
+                // Initially startTime is 0 because if no transctions are looked at yet
+                transaction.outputs.find(output => {
+                    if(output.address === this.publicKey) {
+                        balance += output.amount;
+                    }
+                });
+            }
+        });
+
+        return balance;
+    }
+
     static blockchainWallet() {
         const blockchainWallet = new this();
         // To make it as the blockchain's wallet, we change it's address
