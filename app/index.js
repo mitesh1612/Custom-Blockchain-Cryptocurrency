@@ -60,7 +60,7 @@ app.get('/transactions',(req, res) => {
 
 app.post('/transact',(req, res) => {
     const { recipient, amount } = req.body;
-    const transaction = wallet.createTransaction(recipient, amount, tp);
+    const transaction = wallet.createTransaction(recipient, amount, bc, tp);
     // Broadcast the transaction we created to the server
     p2pServer.broadcastTransaction(transaction);
     // To see the new transaction

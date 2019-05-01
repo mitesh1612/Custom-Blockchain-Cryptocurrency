@@ -1,14 +1,16 @@
 const TransactionPool = require('./transaction-pool');
 const Transaction = require('./transaction');
 const Wallet = require('./index');
+const Blockchain = require('../blockchain');
 
 describe("Transaction Pool", () => {
-    let tp, wallet, transaction;
+    let tp, wallet, transaction, bc;
     beforeEach(() => {
         tp = new TransactionPool();
         wallet = new Wallet();
+        bc = new Blockchain();
         // Reducing the previous manual work to using the wallet's create transaction method
-        transaction = wallet.createTransaction('r4nd-4dr355',30,tp);
+        transaction = wallet.createTransaction('r4nd-4dr355',30,bc,tp);
     });
 
     it("Adds a Transaction to the Pool",() => {
@@ -41,7 +43,7 @@ describe("Transaction Pool", () => {
             for(let i = 0;i<6;i++) {
                 // Create a new wallet each time
                 wallet = new Wallet()
-                transaction = wallet.createTransaction('r4nd-4dr355',30,tp);
+                transaction = wallet.createTransaction('r4nd-4dr355',30,bc,tp);
                 // Even Transactions are Corrupted and others are valid
                 if (i % 2 == 0) {
                     transaction.input.amount = 99999;

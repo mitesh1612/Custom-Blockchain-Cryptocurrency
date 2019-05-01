@@ -30,11 +30,14 @@ class Wallet {
     }
     // Not using the above method right now since there is some issue
 
-    createTransaction(recipient, amount, transactionPool) {
+    createTransaction(recipient, amount, blockchain, transactionPool) {
         // Creates transactions based on a given recipient address and amount
         // Also check if a transaction from this wallet already exists in within a given Transaction Pool. If so, update that
-        
+        // 3rd Parameter as Blockchain to use for balance
+
         // Check if the amount doesnt exceed the balance first
+        
+        this.balance = this.calculateBalance(blockchain);
         if (amount > this.balance) {
             console.log(`Amount: ${amount} Exceeds the Current Balance ${this.balance}`);
             return;
@@ -61,7 +64,7 @@ class Wallet {
         let balance = this.balance;
         let transactions = []
         // Blockchain has blocks which has list of transactions 
-        blockchain.forEach(block => block.data.forEach(transaction => {
+        blockchain.chain.forEach(block => block.data.forEach(transaction => {
             transactions.push(transaction)
         }));
         // Array of transactions whose input was created by this wallet
