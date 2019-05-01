@@ -1,5 +1,5 @@
 const ChainUtil = require('../chain-util');
-
+const { MINING_REWARD } = require('../config');
 class Transaction {
     constructor() {
         this.id = ChainUtil.id();
@@ -25,12 +25,25 @@ class Transaction {
         return this;
     }
 
+    // We need to create transaction object with given outputs and sign it. So we reuse the code of newTransaction function 
+    // Generate Transaction with Given Outputs
+    static transactionWithOutputs(senderWallet, outputs) {
+        // senderWallet to sign and outputs to push
+        // Create the new transaction
+        const transaction = new this();
+        // Push Given Outputs
+        transaction.outputs.push(...outputs);
+        // Sign the Transaction
+        Transaction.signTransaction(transaction, senderWallet);
+        return transaction;
+
+    }
+
     static newTransaction(senderWallet, recipient, amount) {
         // senderWallet required to look at their balance and the public key of the wallet to create an output that represents how much currency they should have after the transaction
         // recipient contains the recipients address
         // amount contains the amount we want to send
         // Goal of this function is to return a new instance of transaction class with proper output specified for the sender and recipient
-        const transaction =  new this();
 
         // Users should not send amount more than their current balance
         if (amount > senderWallet.balance) {
@@ -38,18 +51,22 @@ class Transaction {
             return;
         }
 
-        // ... is the spread operator that pushes array element one by one
-        transaction.outputs.push(...[
-            { amount: senderWallet.balance - amount, address: senderWallet.publicKey},
-            { amount, address: recipient}
-        ]);
         // First is the remaining balance of user
         // Second is the amount sent. Used destructionary syntax to have same key name
 
         // Generates the Input Field
-        Transaction.signTransaction(transaction, senderWallet);
+        // Create a Transaction with the created outputs
+        return Transaction.transactionWithOutputs(senderWallet,[
+            { amount: senderWallet.balance - amount, address: senderWallet.publicKey},
+            { amount, address: recipient}
+        ]);
+    }
 
-        return transaction;
+    static rewardTransaction(minerWallet,blockchainWallet) {
+        // blockchainWallet is used to confirm and authenticate reward transactions
+        return Transaction.transactionWithOutputs(blockchainWallet,[{
+            amount: MINING_REWARD, address: minerWallet.publicKey
+        }]);
     }
 
     static signTransaction(transaction, senderWallet) {

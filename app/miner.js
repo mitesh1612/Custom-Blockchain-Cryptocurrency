@@ -19,6 +19,7 @@ class Miner {
         // Grab Valid Transactions from the Pool (Do not have incorrect or corrupt data). Use these as new block for the chain
         const validTransactions = this.transactionPool.validTransactions();
         // Include a Reward for the Miner
+        
         // Create a block consisting of the valid transactions
         // Since new block was added, so synchronize the chains in p2p server
         // Clear the transaction pool local to the miner and all the transaction pool in the system so that the transactions arent added again
