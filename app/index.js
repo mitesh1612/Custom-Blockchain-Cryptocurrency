@@ -6,6 +6,7 @@ const P2pServer = require('./p2p-server');
 const Wallet = require('../wallet');
 // Due to this every user will have a unique instance of TransactionPool but we want to share this (Its local)
 const TransactionPool = require('../wallet/transaction-pool');
+const Miner = require('./miner');
 // We'll use the P2P Server to synchronize
 
 // Need to run mutiple instances of the same app
@@ -22,6 +23,7 @@ const tp = new TransactionPool();
 // 2. Users must also be able to see all the transactions in the pool
 // Create a new instance of the P2p Server using our blockchain and the transaction pool
 const p2pServer = new P2pServer(bc, tp);
+const miner = new Miner(bc,tp,wallet,p2pServer);
 
 // Returns the blocks of current blockchain
 app.get('/blocks',(req, res) => {
@@ -43,6 +45,12 @@ app.post('/mine',(req, res) => {
     // After mining the block, sync chains to all the peers
     p2pServer.syncChains();
     // Response with showing the updated chain. Redirect to the previous blocks endpoint
+    res.redirect('/blocks');
+});
+
+app.get('/mine-transactions',(req,res) => {
+    const block = miner.mine();
+    console.log(`New Block Added: ${block.toString()}`);
     res.redirect('/blocks');
 });
 
